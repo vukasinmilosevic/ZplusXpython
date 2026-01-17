@@ -25,7 +25,7 @@ def getFR(lep_id, lep_pt, lep_eta, h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FR
 
 
 def estimateZX(FakeRateFile, tree, Nickname):
-    LUMI_INT = 59700
+    LUMI_INT = 7700
 
     # define dummy histogram for CRs
     var_plotHigh = 870.0
@@ -100,26 +100,30 @@ def estimateZX(FakeRateFile, tree, Nickname):
         if(iEvt%50000==0):
             print ("---- Processing event: " + str(iEvt) + "/" + str(nentries))     
         # weight
-        weight = event.eventWeight
+        
 
         if (isData):
             weight = 1
+        
+        else:
+            weight = event.pileupWeight*event.genWeight
  
         if not(isData):
             if (Nickname=="DY10"):
                 weight *= 18610.0*LUMI_INT/lNEvents
                         
             if (Nickname=="DY50"):
-                weight *= 6225.4*LUMI_INT/lNEvents
+                weight *= 5558.0*LUMI_INT/lNEvents
 
             if (Nickname=="TT"):
-                weight *= 87.31*LUMI_INT/lNEvents
+                weight *= 762.1*LUMI_INT/lNEvents
 
             if (Nickname=="WZ"):
-                weight *= 4.67*LUMI_INT/lNEvents
+                weight *= 5.315*LUMI_INT/lNEvents
 
             if (Nickname=="ZZ"):
-                weight *= 1.256*LUMI_INT*event.k_qqZZ_qcd_M*event.k_qqZZ_ewk/lNEvents
+                #weight *= 1.256*LUMI_INT*event.k_qqZZ_qcd_M*event.k_qqZZ_ewk/lNEvents
+                weight *= 1.39*LUMI_INT/lNEvents
 
         if (event.passedZXCRSelection):
             lep_tight = []

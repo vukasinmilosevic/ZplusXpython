@@ -13,8 +13,8 @@ import math
 from estimateZX import *
 
 
-fileList = ["../Data_skimmed.root",
-            "../ZZTo4L_TuneCP5_13TeV_powheg_pythia8_RunIIAutumn18MiniAOD-102X_2018filter2l_new_ZX.root"
+fileList = ["/eos/user/y/yujil/HZZRun3Share/Data2022CD_noDuplicate.root",
+            "/eos/user/y/yujil/HZZRun3Share/ZXCR/ZZto4L_TuneCP5_13p6TeV_powheg-pythia8.root"
             ]
 
 RootNickNames = ["Data","ZZ"]
@@ -28,9 +28,9 @@ print("Second stage of processing (Creation of ZX SR contributions for Data and 
 for i in range(len(fileList)):
     inFile =  ROOT.TFile.Open(fileList[i], "READ")
     if i == 0:
-        tree = inFile.Get("passedEvents")
+        tree = inFile.Get("Events")
     else:
-        tree = inFile.Get("Ana/passedEvents")
+        tree = inFile.Get("Events")
 
 
     print ("- File: \"" + fileList[i] + "\" has been opened.\n-- It has "+str(tree.GetEntries())+" events.\n")

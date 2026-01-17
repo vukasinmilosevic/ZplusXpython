@@ -76,13 +76,13 @@ def setNEvents(processFileName):
     if (processFileName=="DY10"):
         lNEvents = 37951928.0
     if (processFileName=="DY50"): 
-        lNEvents = 99795992.0
+        lNEvents = 27096229
     if (processFileName=="TT"): 
-        lNEvents = 63667448.0
+        lNEvents = 1654387279
     if (processFileName=="WZ"):
-        lNEvents = 6739437.0
+        lNEvents = 22984698
     if (processFileName=="ZZ"):
-        lNEvents = 97457264.0
+        lNEvents = 20341635.1467
     return lNEvents
 
 
@@ -91,7 +91,7 @@ def setNEvents(processFileName):
 def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
     print ("--- Initiating the analyzeZX procedure for file nicknamed as: "+ Nickname +".")
 
-    LUMI_INT = 59700
+    LUMI_INT = 7700
     lineWidth = 2
     leg_xl = 0.50
     leg_xr = 0.90
@@ -316,29 +316,32 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
 
     for event in fTemplateTree:
         iEvt+=1
-        if(iEvt%50000==0):
-            print ("---- Processing event: " + str(iEvt) + "/" + str(nentries))     
+        if(iEvt%1000==0):
+            print ("---- Processing event: " + str(iEvt) + "/" + str(nentries))
         # weight
-        weight = event.eventWeight
+        
 
         if (isData):
             weight = 1
+        else:
+            weight = event.pileupWeight*event.genWeight
  
         if not(isData):
             if (Nickname=="DY10"):
                 weight *= 18610.0*LUMI_INT/lNEvents
                         
             if (Nickname=="DY50"):
-                weight *= 6225.4*LUMI_INT/lNEvents
+                weight *= 5558.0*LUMI_INT/lNEvents
 
             if (Nickname=="TT"):
-                weight *= 87.31*LUMI_INT/lNEvents
+                weight *= 762.1*LUMI_INT/lNEvents
 
             if (Nickname=="WZ"):
-                weight *= 4.67*LUMI_INT/lNEvents
+                weight *= 5.315*LUMI_INT/lNEvents
 
             if (Nickname=="ZZ"):
-                weight *= 1.256*LUMI_INT*event.k_qqZZ_qcd_M*event.k_qqZZ_ewk/lNEvents
+                #weight *= 1.256*LUMI_INT*event.k_qqZZ_qcd_M*event.k_qqZZ_ewk/lNEvents
+                weight *= 1.39*LUMI_INT/lNEvents
 
 
         if (event.passedZ1LSelection):
@@ -375,41 +378,41 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
             
             if (varName=="mEt"):
                 TestVar= 1
-                FillVar= event.met
+                FillVar= event.MET_pt
             
             if (varName=="ptl3"):
-                TestVar= (math.fabs(massZ1-91.188)<7) and (event.met<25) 
+                TestVar= (math.fabs(massZ1-91.188)<7) and (event.PuppiMET_pt<25) 
                 FillVar= pTL3
 
             if ((abs(idL3) == 11) and (math.fabs(etaL3) < 1.497) and TestVar):
                 h1D_FRel_EB_d.Fill(FillVar, weight)
-                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EB_d], Hist_fakes[barrel_endcap_region.EB_d], Hist_BDfakes[barrel_endcap_region.EB_d], Hist_conv[barrel_endcap_region.EB_d],False)
+                PartOrigin(isData, event.lep_matchedR03_PdgId, event.lep_matchedR03_MomId, event.lep_matchedR03_MomMomId,event.lep_Hindex,event.lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EB_d], Hist_fakes[barrel_endcap_region.EB_d], Hist_BDfakes[barrel_endcap_region.EB_d], Hist_conv[barrel_endcap_region.EB_d],False)
                 if (lep_tight and TestVar):
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EB_n], Hist_fakes[barrel_endcap_region.EB_n],Hist_BDfakes[barrel_endcap_region.EB_n],Hist_conv[barrel_endcap_region.EB_n],False)
+                    PartOrigin(isData, event.lep_matchedR03_PdgId, event.lep_matchedR03_MomId, event.lep_matchedR03_MomMomId,event.lep_Hindex,event.lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EB_n], Hist_fakes[barrel_endcap_region.EB_n],Hist_BDfakes[barrel_endcap_region.EB_n],Hist_conv[barrel_endcap_region.EB_n],False)
                     h1D_FRel_EB.Fill(FillVar, weight)
 
             if ((abs(idL3) == 11) and (math.fabs(etaL3) > 1.497) and TestVar):
                 h1D_FRel_EE_d.Fill(FillVar, weight)
-                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EE_d], Hist_fakes[barrel_endcap_region.EE_d],Hist_BDfakes[barrel_endcap_region.EE_d], Hist_conv[barrel_endcap_region.EE_d],False)
+                PartOrigin(isData, event.lep_matchedR03_PdgId, event.lep_matchedR03_MomId, event.lep_matchedR03_MomMomId,event.lep_Hindex,event.lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EE_d], Hist_fakes[barrel_endcap_region.EE_d],Hist_BDfakes[barrel_endcap_region.EE_d], Hist_conv[barrel_endcap_region.EE_d],False)
                 
                 if (lep_tight and TestVar):
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EE_n], Hist_fakes[barrel_endcap_region.EE_n], Hist_BDfakes[barrel_endcap_region.EE_n], Hist_conv[barrel_endcap_region.EE_n],False)
+                    PartOrigin(isData, event.lep_matchedR03_PdgId, event.lep_matchedR03_MomId, event.lep_matchedR03_MomMomId,event.lep_Hindex,event.lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EE_n], Hist_fakes[barrel_endcap_region.EE_n], Hist_BDfakes[barrel_endcap_region.EE_n], Hist_conv[barrel_endcap_region.EE_n],False)
                     h1D_FRel_EE.Fill(FillVar, weight)
            
             if ((abs(idL3) == 13) and (math.fabs(etaL3) < 1.2) and TestVar):
                 h1D_FRmu_EB_d.Fill(FillVar, weight)
-                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.MB_d], Hist_fakes[barrel_endcap_region.MB_d], Hist_BDfakes[barrel_endcap_region.MB_d], Hist_conv[barrel_endcap_region.MB_d],False)
+                PartOrigin(isData, event.lep_matchedR03_PdgId, event.lep_matchedR03_MomId, event.lep_matchedR03_MomMomId,event.lep_Hindex,event.lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.MB_d], Hist_fakes[barrel_endcap_region.MB_d], Hist_BDfakes[barrel_endcap_region.MB_d], Hist_conv[barrel_endcap_region.MB_d],False)
                 
                 if (lep_tight and (lep_iso < 0.35) and TestVar):
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.MB_n], Hist_fakes[barrel_endcap_region.MB_n],Hist_BDfakes[barrel_endcap_region.MB_n], Hist_conv[barrel_endcap_region.MB_n],False)
+                    PartOrigin(isData, event.lep_matchedR03_PdgId, event.lep_matchedR03_MomId, event.lep_matchedR03_MomMomId,event.lep_Hindex,event.lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.MB_n], Hist_fakes[barrel_endcap_region.MB_n],Hist_BDfakes[barrel_endcap_region.MB_n], Hist_conv[barrel_endcap_region.MB_n],False)
                     h1D_FRmu_EB.Fill(FillVar, weight)
 
             if ((abs(idL3) == 13) and (math.fabs(etaL3) > 1.2) and TestVar):
                 h1D_FRmu_EE_d.Fill(FillVar, weight)
-                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.ME_d], Hist_fakes[barrel_endcap_region.ME_d],Hist_BDfakes[barrel_endcap_region.ME_d], Hist_conv[barrel_endcap_region.ME_d],False)
+                PartOrigin(isData, event.lep_matchedR03_PdgId, event.lep_matchedR03_MomId, event.lep_matchedR03_MomMomId,event.lep_Hindex,event.lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.ME_d], Hist_fakes[barrel_endcap_region.ME_d],Hist_BDfakes[barrel_endcap_region.ME_d], Hist_conv[barrel_endcap_region.ME_d],False)
                 
                 if (lep_tight and (lep_iso<0.35) and TestVar):
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.ME_n], Hist_fakes[barrel_endcap_region.ME_n],Hist_BDfakes[barrel_endcap_region.ME_n], Hist_conv[barrel_endcap_region.ME_n],False)
+                    PartOrigin(isData, event.lep_matchedR03_PdgId, event.lep_matchedR03_MomId, event.lep_matchedR03_MomMomId,event.lep_Hindex,event.lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.ME_n], Hist_fakes[barrel_endcap_region.ME_n],Hist_BDfakes[barrel_endcap_region.ME_n], Hist_conv[barrel_endcap_region.ME_n],False)
                     h1D_FRmu_EE.Fill(FillVar, weight)
   
 
@@ -479,48 +482,48 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
                     
             if (nFailedLeptons == 1):
                 h1D_m4l_3P1F.Fill(event.mass4l, weight)
-                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._3P1F], CR[type_of_fake.Fake][CRregion._3P1F],CR[type_of_fake.BDfake][CRregion._3P1F],CR[type_of_fake.Conv][CRregion._3P1F],False)
+                PartOrigin(isData, event.lep_matchedR03_PdgId, event.lep_matchedR03_MomId, event.lep_matchedR03_MomMomId,event.lep_Hindex,event.lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._3P1F], CR[type_of_fake.Fake][CRregion._3P1F],CR[type_of_fake.BDfake][CRregion._3P1F],CR[type_of_fake.Conv][CRregion._3P1F],False)
                 
                 if ((abs(idL[0])+abs(idL[1])+abs(idL[2])+abs(idL[3]))==44):
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._3P1F_4e], CR[type_of_fake.Fake][CRregion._3P1F_4e],CR[type_of_fake.BDfake][CRregion._3P1F_4e],CR[type_of_fake.Conv][CRregion._3P1F_4e],False)
+                    PartOrigin(isData, event.lep_matchedR03_PdgId, event.lep_matchedR03_MomId, event.lep_matchedR03_MomMomId,event.lep_Hindex,event.lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._3P1F_4e], CR[type_of_fake.Fake][CRregion._3P1F_4e],CR[type_of_fake.BDfake][CRregion._3P1F_4e],CR[type_of_fake.Conv][CRregion._3P1F_4e],False)
                     h1D_m4l_3P1F_4e.Fill(event.mass4l, weight)
             
                 if ((abs(idL[0])+abs(idL[1])+abs(idL[2])+abs(idL[3]))==52):
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._3P1F_4mu], CR[type_of_fake.Fake][CRregion._3P1F_4mu], CR[type_of_fake.BDfake][CRregion._3P1F_4mu],CR[type_of_fake.Conv][CRregion._3P1F_4mu],False)
+                    PartOrigin(isData, event.lep_matchedR03_PdgId, event.lep_matchedR03_MomId, event.lep_matchedR03_MomMomId,event.lep_Hindex,event.lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._3P1F_4mu], CR[type_of_fake.Fake][CRregion._3P1F_4mu], CR[type_of_fake.BDfake][CRregion._3P1F_4mu],CR[type_of_fake.Conv][CRregion._3P1F_4mu],False)
                     h1D_m4l_3P1F_4mu.Fill(event.mass4l, weight)
 
                 if ((abs(idL[0])+abs(idL[1])+abs(idL[2])+abs(idL[3]))==48):
 
                     if (abs(idL[2])+abs(idL[3])==22):
                         h1D_m4l_3P1F_2mu2e.Fill(event.mass4l, weight)
-                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id,event. mass4l,weight,CR[type_of_fake.Prom][CRregion._3P1F_2mu2e], CR[type_of_fake.Fake][CRregion._3P1F_2mu2e],CR[type_of_fake.BDfake][CRregion._3P1F_2mu2e],CR[type_of_fake.Conv][CRregion._3P1F_2mu2e],False)
+                        PartOrigin(isData, event.lep_matchedR03_PdgId, event.lep_matchedR03_MomId, event.lep_matchedR03_MomMomId,event.lep_Hindex,event.lep_id,event. mass4l,weight,CR[type_of_fake.Prom][CRregion._3P1F_2mu2e], CR[type_of_fake.Fake][CRregion._3P1F_2mu2e],CR[type_of_fake.BDfake][CRregion._3P1F_2mu2e],CR[type_of_fake.Conv][CRregion._3P1F_2mu2e],False)
     
                     if (abs(idL[2])+abs(idL[3])==26):
                         h1D_m4l_3P1F_2e2mu.Fill(event.mass4l, weight)
-                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id,event. mass4l,weight,CR[type_of_fake.Prom][CRregion._3P1F_2e2mu], CR[type_of_fake.Fake][CRregion._3P1F_2e2mu],CR[type_of_fake.BDfake][CRregion._3P1F_2e2mu],CR[type_of_fake.Conv][CRregion._3P1F_2e2mu],False)     
+                        PartOrigin(isData, event.lep_matchedR03_PdgId, event.lep_matchedR03_MomId, event.lep_matchedR03_MomMomId,event.lep_Hindex,event.lep_id,event. mass4l,weight,CR[type_of_fake.Prom][CRregion._3P1F_2e2mu], CR[type_of_fake.Fake][CRregion._3P1F_2e2mu],CR[type_of_fake.BDfake][CRregion._3P1F_2e2mu],CR[type_of_fake.Conv][CRregion._3P1F_2e2mu],False)     
 
             if (nFailedLeptons == 2):
                 h1D_m4l_2P2F.Fill(event.mass4l, weight)
-                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F], CR[type_of_fake.Fake][CRregion._2P2F], CR[type_of_fake.BDfake][CRregion._2P2F],CR[type_of_fake.Conv][CRregion._2P2F],False)
+                PartOrigin(isData, event.lep_matchedR03_PdgId, event.lep_matchedR03_MomId, event.lep_matchedR03_MomMomId,event.lep_Hindex,event.lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F], CR[type_of_fake.Fake][CRregion._2P2F], CR[type_of_fake.BDfake][CRregion._2P2F],CR[type_of_fake.Conv][CRregion._2P2F],False)
                 
                 
                 if ((abs(idL[0])+abs(idL[1])+abs(idL[2])+abs(idL[3]))==44):
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F_4e], CR[type_of_fake.Fake][CRregion._2P2F_4e], CR[type_of_fake.BDfake][CRregion._2P2F_4e],CR[type_of_fake.Conv][CRregion._2P2F_4e],False)
+                    PartOrigin(isData, event.lep_matchedR03_PdgId, event.lep_matchedR03_MomId, event.lep_matchedR03_MomMomId,event.lep_Hindex,event.lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F_4e], CR[type_of_fake.Fake][CRregion._2P2F_4e], CR[type_of_fake.BDfake][CRregion._2P2F_4e],CR[type_of_fake.Conv][CRregion._2P2F_4e],False)
                     h1D_m4l_2P2F_4e.Fill(event.mass4l, weight)
                 
                 if ((abs(idL[0])+abs(idL[1])+abs(idL[2])+abs(idL[3]))==52):
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F_4mu], CR[type_of_fake.Fake][CRregion._2P2F_4mu],CR[type_of_fake.BDfake][CRregion._2P2F_4mu],CR[type_of_fake.Conv][CRregion._2P2F_4mu],False)
+                    PartOrigin(isData, event.lep_matchedR03_PdgId, event.lep_matchedR03_MomId, event.lep_matchedR03_MomMomId,event.lep_Hindex,event.lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F_4mu], CR[type_of_fake.Fake][CRregion._2P2F_4mu],CR[type_of_fake.BDfake][CRregion._2P2F_4mu],CR[type_of_fake.Conv][CRregion._2P2F_4mu],False)
                     h1D_m4l_2P2F_4mu.Fill(event.mass4l, weight)
                 
                 if ((abs(idL[0])+abs(idL[1])+abs(idL[2])+abs(idL[3]))==48):
                     
                     if (abs(idL[2])+abs(idL[3])==22):
                         h1D_m4l_2P2F_2mu2e.Fill(event.mass4l, weight)
-                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F_2mu2e], CR[type_of_fake.Fake][CRregion._2P2F_2mu2e],CR[type_of_fake.BDfake][CRregion._2P2F_2mu2e],CR[type_of_fake.Conv][CRregion._2P2F_2mu2e],False)
+                        PartOrigin(isData, event.lep_matchedR03_PdgId, event.lep_matchedR03_MomId, event.lep_matchedR03_MomMomId,event.lep_Hindex,event.lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F_2mu2e], CR[type_of_fake.Fake][CRregion._2P2F_2mu2e],CR[type_of_fake.BDfake][CRregion._2P2F_2mu2e],CR[type_of_fake.Conv][CRregion._2P2F_2mu2e],False)
 
                     if (abs(idL[2])+abs(idL[3])==26):
                         h1D_m4l_2P2F_2e2mu.Fill(event.mass4l, weight)
-                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F_2e2mu], CR[type_of_fake.Fake][CRregion._2P2F_2e2mu],CR[type_of_fake.BDfake][CRregion._2P2F_2e2mu],CR[type_of_fake.Conv][CRregion._2P2F_2e2mu],False)
+                        PartOrigin(isData, event.lep_matchedR03_PdgId, event.lep_matchedR03_MomId, event.lep_matchedR03_MomMomId,event.lep_Hindex,event.lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F_2e2mu], CR[type_of_fake.Fake][CRregion._2P2F_2e2mu],CR[type_of_fake.BDfake][CRregion._2P2F_2e2mu],CR[type_of_fake.Conv][CRregion._2P2F_2e2mu],False)
                 
       
 
